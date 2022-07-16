@@ -1,0 +1,28 @@
+{
+  "name": "brownsugar",
+  "version": "1.0.2",
+  "description": "Simple library for managing structures, types &amp; errors.",
+  "main": "./dist/index.js",
+  "files": [
+    "./dist/**/*"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickBes/brownsugar.git"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nickBes/brownsugar/issues"
+  },
+  "homepage": "https://github.com/nickBes/brownsugar#readme",
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  }
+}
