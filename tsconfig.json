@@ -1,0 +1,7 @@
+// ts config for the tests
+{
+    "compilerOptions": {
+        "types": ["jest", "node"],
+        "noEmit": true,
+    }
+}
