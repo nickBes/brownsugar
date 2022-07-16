@@ -1,0 +1,36 @@
+{
+  "name": "brownsugar",
+  "version": "0.0.0",
+  "description": "Simple library for managing structures, types &amp; errors.",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "umd:main": "dist/index.umd.js",
+  "module": "dist/index.mjs",
+  "exports": {
+    "require": "./dist/index.js",
+    "default": "./dist/index.modern.mjs"
+  },
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "build": "microbundle --no-sourcemap --tsconfig src/tsconfig.json",
+    "dev": "npm test -- --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickBes/brownsugar.git"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nickBes/brownsugar/issues"
+  },
+  "homepage": "https://github.com/nickBes/brownsugar#readme",
+  "devDependencies": {
+    "@types/jest": "^28.1.6",
+    "jest": "^28.1.3",
+    "microbundle": "^0.15.0",
+    "ts-jest": "^28.0.6",
+    "typescript": "^4.7.4"
+  }
+}
