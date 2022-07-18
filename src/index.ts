@@ -1,14 +1,14 @@
 interface RawResult {
-    ok: boolean
+    readonly ok: boolean
 }
 
 export interface OkResult<T> extends RawResult {
-    ok: true
+    readonly ok: true
     value: T
 }
 
 export interface ErrResult extends RawResult {
-    ok: false
+    readonly ok: false
     err: unknown
 }
 
@@ -38,4 +38,34 @@ export function intoResult<T>(callback: ThrowableCallback<T>): Result<T> | Promi
     } catch(e) {
         return err(e)
     }
+}
+
+interface RawOption {
+    readonly some: boolean
+}
+
+export interface SomeOption<T> extends RawOption {
+    readonly some: true
+    value: NonNullable<T>
+}
+
+export interface NoneOption extends RawOption {
+    readonly some: false
+}
+
+export type Option<T> = SomeOption<T> | NoneOption
+
+export function some<T>(value: NonNullable<T>): SomeOption<T> {
+    return {some: true, value}
+}
+
+export function none(): NoneOption {
+    return {some: false}
+}
+
+export function option<T>(nullable: NonNullable<T> | undefined | null): Option<T> {
+    if (nullable == undefined || nullable == null) {
+        return none()
+    }
+    return some(nullable)
 }
