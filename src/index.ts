@@ -69,3 +69,41 @@ export function option<T>(nullable: NonNullable<T> | undefined | null): Option<T
     }
     return some(nullable)
 }
+
+type FilterMapCallback<T> = (value: T, index: number) => Option<any>
+type FilterMap<T> = (callback: FilterMapCallback<T>) => NonNullable<any>
+
+// define global array methods
+// important !!! 
+// because you can pass generics once here, additional types that are
+// based on other generics will be declared with any
+declare global {
+
+
+    interface Array<T extends Option<any>> {
+        // returns array of some values
+        get_some: () => NonNullable<any>[]
+    }
+
+    interface Array<T> {
+        // like rust's filter map
+        filter_map: FilterMap<T>
+    }
+}
+
+// For some reason defining prototypes doesnt work 
+// with arrow functions so I have to define a regular.
+
+Array<Option<any>>.prototype.get_some = function get_some(): NonNullable<any>[] {
+    // method is defined on arrays of T which extends Option<any>
+    // which means we can cast "this" from any[] into Option<any>[]
+    return (this as Option<any>[])
+            .filter((val): val is SomeOption<any> => val.some)
+            .map(s => s.value)
+}
+
+Array.prototype.filter_map = function filter_map<T>(callback: FilterMapCallback<T>): NonNullable<any>[] {
+    return this
+            .map((value, index) => callback(value, index))
+            .get_some()
+}

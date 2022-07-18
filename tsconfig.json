@@ -3,6 +3,6 @@
     "compilerOptions": {
         "types": ["jest", "node"],
         "noEmit": true,
-        "strict": true
+        "strict": true,
     }
 }

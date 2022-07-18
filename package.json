@@ -1,6 +1,6 @@
 {
   "name": "brownsugar",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple library for managing structures, types &amp; errors.",
   "source": "src/index.ts",
   "main": "dist/index.js",
