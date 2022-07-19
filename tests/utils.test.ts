@@ -1,18 +1,18 @@
-import { none, some, Option, ok, err } from "../src"
+import { None, Some, OptionType, Ok, Err } from "../src"
 
 describe("Array methods", () => {
     test("Get some", () => {
-        const arr: Array<Option<string | number>> = [some("nla"), some(123), none(), none()]
+        const arr: Array<OptionType<string | number>> = [new Some("nla"), new Some(123), None, None]
         expect(arr.getSome()).toStrictEqual(["nla", 123])
     })
 
     test("Get ok", () => {
-        const arr = [ok("dwd"), ok(123), err("eeeee")]
+        const arr = [new Ok("dwd"), new Ok(123), new Err("eeeee")]
         expect(arr.getOk<string | number>()).toStrictEqual(["dwd", 123])
     })
 
     test("Get err", () => {
-        const arr = [err("blah"), ok(123), err("eee")]
+        const arr = [new Err("blah"), new Ok(123), new Err("eee")]
         expect(arr.getErrors()).toStrictEqual(["blah", "eee"])
     })
 
@@ -21,16 +21,16 @@ describe("Array methods", () => {
         let numbers = arr.filterMap((val) => {
             let parsed = parseInt(val)
             if (isNaN(parsed)) {
-                return none()
+                return None
             }
-            return some(parsed)
+            return new Some(parsed)
         })
         expect(numbers).toStrictEqual([1, 23])
     })
 
     test("Find map", () => {
         const arr = [1, 2, 3]
-        const expectedSome = some(2)
-        expect(arr.findMap(val => val % 2 == 0 ? some(val) : none())).toStrictEqual(expectedSome)
+        const expectedSome = new Some(2)
+        expect(arr.findMap(val => val % 2 == 0 ? new Some(val) : None)).toStrictEqual(expectedSome)
     })
 })

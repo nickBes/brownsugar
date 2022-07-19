@@ -1,4 +1,4 @@
-import { ErrResult, ok, err, OkResult, intoResult } from "../src"
+import { Err, Ok, Result } from "../src"
 
 function safe() : string {
     return "blah blah blah"
@@ -11,44 +11,45 @@ function throwable(e: unknown) : never {
 // making sure that the methods that create the Result objects are
 // matching the expected types
 describe("Can we create different type of results?", () => {
-    test("Ok result", () => {
-        const value = safe()
-        const expectedOk : OkResult<typeof value> = {ok: true, value}
-        expect(ok(value)).toStrictEqual(expectedOk)
-    })
-
     test("Error result", async () => {
-        const errResult : ErrResult = {ok: false, err: "blah blah blah"}
+        const errResult = new Err("blah blah blah")
 
         // try and finally shouldn't work here
         try {
             throwable(errResult.err)
         } catch(e) {
-            expect(err(e)).toStrictEqual(errResult)
+            expect(new Err(e)).toStrictEqual(errResult)
         }
     })
 })
 
 describe("Can we convert callback into result?", () => {
     test("From ok sync", () => {
-        const expectedOk = ok(safe())
-        expect(intoResult(safe)).toStrictEqual(expectedOk)
+        const expectedOk = new Ok(safe())
+        expect(Result.from(safe)).toStrictEqual(expectedOk)
     })
 
     test("From err sync", () => {
-        const errResult = err("blah")
-        expect(intoResult(() => throwable(errResult.err))).toStrictEqual(errResult)
+        const errResult = new Err("blah")
+        expect(Result.from(() => throwable(errResult.err))).toStrictEqual(errResult)
     })
 
     test("From ok async", async () => {
-        const expectedOk = ok(safe())
-        const okResult = await intoResult(async () => safe())
+        const expectedOk = new Ok(safe())
+        const okResult = await Result.from(async () => safe())
         expect(okResult).toStrictEqual(expectedOk)
     })
 
     test("From err async", async () => {
-        const expectedErr = err("blah")
-        const errResult = await intoResult(async () => {throw throwable(expectedErr.err)})
+        const expectedErr = new Err("blah")
+        const errResult = await Result.from(async () => {throw throwable(expectedErr.err)})
         expect(errResult).toStrictEqual(expectedErr)
+    })
+})
+
+describe("Can we unwrap a result?", () => {
+    test("Unwrap if ok", () => {
+        const value = safe()
+        expect(Result.from(safe).unwrap())
     })
 })
