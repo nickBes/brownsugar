@@ -70,40 +70,57 @@ export function option<T>(nullable: NonNullable<T> | undefined | null): Option<T
     return some(nullable)
 }
 
-type FilterMapCallback<T> = (value: T, index: number) => Option<any>
-type FilterMap<T> = (callback: FilterMapCallback<T>) => NonNullable<any>
+type MapCallback<T, K> = (value: T) => Option<K>
 
 // define global array methods
-// important !!! 
-// because you can pass generics once here, additional types that are
-// based on other generics will be declared with any
 declare global {
-
-
-    interface Array<T extends Option<any>> {
-        // returns array of some values
-        get_some: () => NonNullable<any>[]
-    }
-
     interface Array<T> {
-        // like rust's filter map
-        filter_map: FilterMap<T>
+
+        // returns the values from result array
+        getOk<U>(this: Array<Result<U>>): U[]
+
+        // returns the errros from result array
+        getErrors<U>(this: Array<Result<U>>): unknown[]
+
+        // returns the values from an option array
+        getSome<U>(this: Array<Option<U>>): NonNullable<U>[]
+
+        // maps each element using a MapCallback and return the elements
+        // which are the values of the return SomeOption type
+        filterMap<U>(callback: MapCallback<T, U>): NonNullable<U>[]
+
+        // same as filter map but it returns the value of the first SomeOption
+        findMap<U>(callback: MapCallback<T, U>): Option<U>
     }
 }
 
 // For some reason defining prototypes doesnt work 
 // with arrow functions so I have to define a regular.
 
-Array<Option<any>>.prototype.get_some = function get_some(): NonNullable<any>[] {
-    // method is defined on arrays of T which extends Option<any>
-    // which means we can cast "this" from any[] into Option<any>[]
-    return (this as Option<any>[])
-            .filter((val): val is SomeOption<any> => val.some)
-            .map(s => s.value)
+Array.prototype.getOk = function getOk<U>(this: Array<Result<U>>): U[] {
+    return this
+                .filter((res): res is OkResult<U> => res.ok)
+                .map(k => k.value)
 }
 
-Array.prototype.filter_map = function filter_map<T>(callback: FilterMapCallback<T>): NonNullable<any>[] {
+Array.prototype.getErrors = function getErrors<U>(this: Array<Result<U>>): unknown[] {
     return this
-            .map((value, index) => callback(value, index))
-            .get_some()
+                .filter((res): res is ErrResult => !res.ok)
+                .map(e => e.err)
+}
+
+Array.prototype.getSome = function getSome<U>(this: Array<Option<U>>) : NonNullable<U>[] {
+    return this.
+                filter((opt): opt is SomeOption<U> => opt.some)
+                .map(s => s.value)
+}
+
+Array.prototype.filterMap = function filterMap<U>(callback: MapCallback<any, U>): NonNullable<U>[] {
+    return this
+                .map((value) => callback(value))
+                .getSome()
+}
+
+Array.prototype.findMap = function findMap<U>(callback: MapCallback<any, U>): Option<U> {
+    return option(this.filterMap(callback)[0])
 }
