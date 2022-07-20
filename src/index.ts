@@ -35,19 +35,19 @@ export class Err implements RawResult, Unwrapable<never> {
 export type ResultType<T> = Ok<T> | Err
 
 export namespace Result {
-    type ThrowableCallback<T> = () => Promise<T> | T | never
-
-    export function from<T>(callback: ThrowableCallback<T>): ResultType<T> | Promise<ResultType<T>> {
+    export function fromSync<T>(callback: () => T | never): ResultType<T> {
         try {
-            const returned = callback()
-    
-            // if the callback is async return an async result
-            if (returned instanceof Promise) {
-                return returned
-                            .then(val => new Ok(val))
-                            .catch(e => new Err(e))
-            } 
-            return new Ok(returned)
+            const value = callback()
+            return new Ok(value)
+        } catch(e) {
+            return new Err(e)
+        }
+    }
+
+    export async function fromAsync<T>(callback: () => Promise<T> | never): Promise<ResultType<T>> {
+        try {
+            const value = await callback()
+            return new Ok(value)
         } catch(e) {
             return new Err(e)
         }
@@ -110,10 +110,6 @@ declare global {
         // same as filter map but it returns the value of the first Some
         findMap<U>(callback: MapCallback<T, U>): OptionType<U>
     }
-
-    interface Promise<T> {
-        unwrap<U>(this: Promise<ResultType<U>>): Promise<U>
-    }
 }
 
 // For some reason defining prototypes doesnt work 
@@ -145,8 +141,4 @@ Array.prototype.filterMap = function filterMap<U>(callback: MapCallback<any, U>)
 
 Array.prototype.findMap = function findMap<U>(callback: MapCallback<any, U>): OptionType<U> {
     return Option.from(this.filterMap(callback)[0])
-}
-
-Promise.prototype.unwrap = async function unwrap<U>(this: Promise<ResultType<U>>): Promise<U> {
-    return (await this).unwrap()
 }

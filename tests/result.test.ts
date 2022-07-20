@@ -26,23 +26,23 @@ describe("Can we create different type of results?", () => {
 describe("Can we convert callback into result?", () => {
     test("From ok sync", () => {
         const expectedOk = new Ok(safe())
-        expect(Result.from(safe)).toStrictEqual(expectedOk)
+        expect(Result.fromSync(safe)).toStrictEqual(expectedOk)
     })
 
     test("From err sync", () => {
         const errResult = new Err("blah")
-        expect(Result.from(() => throwable(errResult.err))).toStrictEqual(errResult)
+        expect(Result.fromSync(() => throwable(errResult.err))).toStrictEqual(errResult)
     })
 
     test("From ok async", async () => {
         const expectedOk = new Ok(safe())
-        const okResult = await Result.from(async () => safe())
+        const okResult = await Result.fromAsync(async () => safe())
         expect(okResult).toStrictEqual(expectedOk)
     })
 
     test("From err async", async () => {
         const expectedErr = new Err("blah")
-        const errResult = await Result.from(async () => {throw throwable(expectedErr.err)})
+        const errResult = await Result.fromAsync(async () => {throw throwable(expectedErr.err)})
         expect(errResult).toStrictEqual(expectedErr)
     })
 })
@@ -50,6 +50,11 @@ describe("Can we convert callback into result?", () => {
 describe("Can we unwrap a result?", () => {
     test("Unwrap if ok", () => {
         const value = safe()
-        expect(Result.from(safe).unwrap())
+        expect(Result.fromSync(safe).unwrap()).toBe(value)
+    })
+
+    test("Unwrap if err", () => {
+        const error = "blah"
+        expect(() => (new Err(error)).unwrap()).toThrow(error)
     })
 })
