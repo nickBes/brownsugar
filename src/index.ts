@@ -6,6 +6,7 @@ interface RawResult {
 
 interface Unwrapable<T> {
     unwrap: () => T
+    unwrapOr<T2>(value: T2): T | T2
 }
 
 export class Ok<T> implements RawResult, Unwrapable<T> {
@@ -27,6 +28,10 @@ export class Ok<T> implements RawResult, Unwrapable<T> {
     errOption(): typeof None {
         return None
     }
+
+    unwrapOr<T2>(_: T2): T | T2 {
+        return this.value
+    }
 }
 
 export class Err implements RawResult, Unwrapable<never> {
@@ -47,6 +52,10 @@ export class Err implements RawResult, Unwrapable<never> {
 
     errOption(): OptionType<unknown> {
         return Option.from(this.err)
+    }
+
+    unwrapOr<T2>(value: T2): T2 {
+        return value
     }
 }
 
@@ -77,7 +86,7 @@ interface RawOption {
     okOr: (error: unknown) => ResultType<any>
 }
 
-export class Some<T> implements RawOption {
+export class Some<T> implements RawOption, Unwrapable<T> {
     readonly some = true
     value: NonNullable<T>
 
@@ -86,6 +95,10 @@ export class Some<T> implements RawOption {
     }
 
     unwrap(): NonNullable<T> {
+        return this.value
+    }
+
+    unwrapOr<T2>(_: T2): T {
         return this.value
     }
 
@@ -99,6 +112,9 @@ export const None: Unwrapable<null> & RawOption = {
     unwrap: () => null,
     okOr(error: unknown) {
         return new Err(error)
+    },
+    unwrapOr<T2>(value: T2): T2 {
+        return value
     }
 }
 
