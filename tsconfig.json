@@ -4,5 +4,6 @@
         "types": ["jest", "node"],
         "noEmit": true,
         "strict": true,
+        "esModuleInterop": true
     }
 }

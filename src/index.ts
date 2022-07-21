@@ -1,5 +1,7 @@
 interface RawResult {
     readonly ok: boolean
+    okOption: () => OptionType<any>
+    errOption: () => OptionType<any>
 }
 
 interface Unwrapable<T> {
@@ -17,6 +19,14 @@ export class Ok<T> implements RawResult, Unwrapable<T> {
     unwrap(): T {
         return this.value
     }
+
+    okOption(): OptionType<T> {
+        return Option.from(this.value)
+    }
+
+    errOption(): typeof None {
+        return None
+    }
 }
 
 export class Err implements RawResult, Unwrapable<never> {
@@ -30,12 +40,20 @@ export class Err implements RawResult, Unwrapable<never> {
     unwrap(): never {
         throw this.err
     }
+
+    okOption(): typeof None {
+        return None
+    }
+
+    errOption(): OptionType<unknown> {
+        return Option.from(this.err)
+    }
 }
 
 export type ResultType<T> = Ok<T> | Err
 
 export namespace Result {
-    export function fromSync<T>(callback: () => T | never): ResultType<T> {
+    export function fromSync<T>(callback: () => T): ResultType<T> {
         try {
             const value = callback()
             return new Ok(value)
@@ -44,7 +62,7 @@ export namespace Result {
         }
     }
 
-    export async function fromAsync<T>(callback: () => Promise<T> | never): Promise<ResultType<T>> {
+    export async function fromAsync<T>(callback: () => Promise<T>): Promise<ResultType<T>> {
         try {
             const value = await callback()
             return new Ok(value)
@@ -56,6 +74,7 @@ export namespace Result {
 
 interface RawOption {
     readonly some: boolean
+    okOr: (error: unknown) => ResultType<any>
 }
 
 export class Some<T> implements RawOption {
@@ -69,11 +88,18 @@ export class Some<T> implements RawOption {
     unwrap(): NonNullable<T> {
         return this.value
     }
+
+    okOr(_: unknown): Ok<T> {
+        return new Ok(this.value)
+    }
 }
 
 export const None: Unwrapable<null> & RawOption = {
     some: false,
-    unwrap: () => null
+    unwrap: () => null,
+    okOr(error: unknown) {
+        return new Err(error)
+    }
 }
 
 export type OptionType<T> = Some<T> | typeof None
