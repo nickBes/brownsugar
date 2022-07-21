@@ -1,4 +1,4 @@
-import { Some, None, Option } from "../src"
+import { Some, None, Option, Ok, Err } from "../src"
 
 function nonNull(): string {
     return "blah blah 2"
@@ -30,5 +30,17 @@ describe("Can we unwrap an option?", () => {
 
     test("Unwrap from null", () => {
         expect(Option.from(null).unwrap()).toBe(null)
+    })
+})
+
+describe("Can we convert into result?", () => {
+    test("Some into ok", () => {
+        const value = nonNull()
+        expect(Option.from(value).okOr("Got null")).toStrictEqual(new Ok(value))
+    })
+
+    test("None into err", () => {
+        const err = "Recieved nullable type"
+        expect(Option.from(null).okOr(err)).toStrictEqual(new Err(err))
     })
 })
