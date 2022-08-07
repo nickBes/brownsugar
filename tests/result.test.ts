@@ -57,6 +57,26 @@ describe("Can we unwrap a result?", () => {
         const error = "blah"
         expect(() => (new Err(error)).unwrap()).toThrow(error)
     })
+
+    test("Unwrap or ok", () => {
+        const value = safe()
+        expect(Result.fromSync(safe).unwrapOr(null)).toBe(value)
+    })
+
+    test("Unwrap or err", () => {
+        const value = safe()
+        expect(Result.fromSync(() => throwable(null)).unwrapOr(value)).toBe(value)
+    })
+
+    test("Unwrap or else ok", () => {
+        const value = safe()
+        expect(Result.fromSync(safe).unwrapOrElse(() => null)).toBe(value)
+    })
+
+    test("Unwrap or else err", () => {
+        const value = safe()
+        expect(Result.fromSync(() => throwable(null)).unwrapOrElse(safe)).toBe(value)
+    })
 })
 
 describe("Can we convert into an option?", () => {
