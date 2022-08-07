@@ -32,6 +32,16 @@ describe("Can we unwrap an option?", () => {
         expect(Option.from(null).unwrap()).toBe(null)
     })
 
+    test("Unwrap or some", () => {
+        const value = nonNull()
+        expect(Option.from(value).unwrapOr("")).toBe(value)
+    })
+
+    test("Unwrap or none", () => {
+        const value = nonNull()
+        expect(Option.from(null).unwrapOr(value)).toBe(value)
+    })
+
     test("Unwrap or else some", () => {
         const value = nonNull()
         expect(Option.from(value).unwrapOrElse(nonNull)).toBe(value)
