@@ -129,7 +129,7 @@ export const None: Unwrapable<null> & RawOption = {
     unwrapOr<T2>(value: T2): T2 {
         return value
     },
-    unwrapOrElse<T2>(callback: (value?: null) => T2): T2 {
+    unwrapOrElse<T2>(callback: (value?: never) => T2): T2 {
         return callback()
     }
 }

@@ -28,5 +28,23 @@ Brownsugar is a simple library for managing results and options in typescript.
 
 # Docs
 ## Options
+Options are structures which let you handle values that might be `undefined` or `null`.
+
+But, sometimes when using options you might write redundant code.
+
+For example:
+```ts
+import { Option } from "brownsugar"
+
+function nullable(): string | null {...}
+
+const value = Option.from(nullable())
+                    .unwrapOr("default string")
+```
+
+Which is equivalent to:
+```ts
+const value = nullable() ?? "default string"
+```
 ## Results
 ## Array methods
