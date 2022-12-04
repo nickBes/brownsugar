@@ -1,8 +1,8 @@
-import { None, Some, OptionType, Ok, Err } from "../src"
+import { Ok, Err, Nullable } from "../src"
 
 describe("Array methods", () => {
     test("Get some", () => {
-        const arr: Array<OptionType<string | number>> = [new Some("nla"), new Some(123), None, None]
+        const arr: Array<Nullable<string | number>> = ["nla", 123, null, undefined]
         expect(arr.getSome()).toStrictEqual(["nla", 123])
     })
 
@@ -21,16 +21,16 @@ describe("Array methods", () => {
         let numbers = arr.filterMap((val) => {
             let parsed = parseInt(val)
             if (isNaN(parsed)) {
-                return None
+                return null
             }
-            return new Some(parsed)
+            return parsed
         })
         expect(numbers).toStrictEqual([1, 23])
     })
 
     test("Find map", () => {
         const arr = [1, 2, 3]
-        const expectedSome = new Some(2)
-        expect(arr.findMap(val => val % 2 == 0 ? new Some(val) : None)).toStrictEqual(expectedSome)
+        const expectedSome = 2
+        expect(arr.findMap(val => val % 2 == 0 ? val : null)).toStrictEqual(expectedSome)
     })
 })

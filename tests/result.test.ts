@@ -1,4 +1,4 @@
-import { Err, None, Ok, Result, Some } from "../src"
+import { Err, Ok, Result } from "../src"
 
 function safe() : string {
     return "blah blah blah"
@@ -76,33 +76,5 @@ describe("Can we unwrap a result?", () => {
     test("Unwrap or else err", () => {
         const value = safe()
         expect(Result.fromSync(() => throwable(null)).unwrapOrElse(safe)).toBe(value)
-    })
-})
-
-describe("Can we convert into an option?", () => {
-    test("Non nullable ok into some", () => {
-        const value = safe()
-        expect(Result.fromSync(safe).okOption()).toStrictEqual(new Some(value))
-    })
-
-    test("Nullable ok into option", () => {
-        expect(Result.fromSync(() => null).okOption()).toStrictEqual(None)
-    })
-
-    test("Err into none", () => {
-        expect(Result.fromSync(() => throwable("eee")).okOption()).toStrictEqual(None)
-    })
-
-    test("Ok into none", () => {
-        expect(Result.fromSync(safe).errOption()).toStrictEqual(None)
-    })
-
-    test("Non nullable err into some", () => {
-        const err = "blah"
-        expect(Result.fromSync(() => throwable(err)).errOption()).toStrictEqual(new Some(err))
-    })
-
-    test("Nullable result into none", () => {
-        expect(Result.fromSync(() => throwable(null)).errOption()).toStrictEqual(None)
     })
 })
